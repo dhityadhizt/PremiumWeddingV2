@@ -58,6 +58,7 @@ main > section.wishas {
   overflow: hidden;
 }
 
+/* Layer 1: Background gambar */
 main > section#bride::after,
 main > section.hadist::after,
 main > section.time::after,
@@ -93,6 +94,7 @@ main > section.wishas::after {
   z-index: 1;
 }
 
+/* Layer 2: Overlay di atas layer background */
 main > section#bride::before,
 main > section.hadist::before,
 main > section.time::before,
@@ -108,13 +110,39 @@ main > section.wishas::before {
   z-index: 2;
 }
 
-main > section#bride > *,
-main > section.hadist > *,
-main > section.time > *,
-main > section.galeri > *,
-main > section.wishas > * {
-  position: relative;
+/* Layer 3 (1 tingkat ke atas dari layer background): Efek Watercolor Splash */
+.watercolor-splash-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  pointer-events: none;
   z-index: 3;
+  overflow: hidden;
+  mix-blend-mode: multiply;
+}
+
+main > section .watercolor-splash-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+.watercolor-splash-container.blend-screen {
+  mix-blend-mode: screen;
+}
+
+/* Layer 4: Konten utama section berada di atas layer background & efek splash */
+main > section#bride > *:not(.watercolor-splash-container),
+main > section.hadist > *:not(.watercolor-splash-container),
+main > section.time > *:not(.watercolor-splash-container),
+main > section.galeri > *:not(.watercolor-splash-container),
+main > section.wishas > *:not(.watercolor-splash-container) {
+  position: relative;
+  z-index: 4;
 }
 
 /* ==========================================================
@@ -157,7 +185,7 @@ main > section.wishas > * {
 }
 
 /* ==========================================================
-   3. TOMBOL AUDIO & ABSTRACT WATERCOLOR SPLASH
+   3. TOMBOL AUDIO & WATERCOLOR SPLASH
    ========================================================== */
 .audio button {
   width: 2rem;
@@ -196,44 +224,21 @@ main > section.wishas > * {
   }
 }
 
-/* Layer bercak cat air abstrak */
-.watercolor-splash-container {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  pointer-events: none;
-  z-index: 998;
-  overflow: hidden;
-  mix-blend-mode: multiply;
-}
-
-.watercolor-splash-container.blend-screen {
-  mix-blend-mode: screen;
-}
-
 .watercolor-splash {
   position: absolute;
   transform-origin: center center;
   will-change: transform, opacity;
   pointer-events: none;
   border-radius: 0 !important;
+  opacity: 0;
 }
 
-.watercolor-splash-tint {
-  position: relative;
+.watercolor-splash img {
+  display: block;
   width: 100%;
   height: 100%;
-  background-color: var(--splash-color, #4169E1);
-  -webkit-mask-image: var(--splash-mask);
-  mask-image: var(--splash-mask);
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 @keyframes watercolorSpread {
@@ -242,10 +247,10 @@ main > section.wishas > * {
     transform: translate(-50%, -50%) scale(0.32) rotate(var(--splash-rot, 0deg));
   }
   25% {
-    opacity: var(--splash-peak-opacity, 0.48);
+    opacity: var(--splash-peak-opacity, 0.55);
   }
   70% {
-    opacity: var(--splash-mid-opacity, 0.32);
+    opacity: var(--splash-mid-opacity, 0.36);
     transform: translate(-50%, -50%) scale(var(--splash-scale, 1.15)) rotate(calc(var(--splash-rot, 0deg) + 3deg));
   }
   100% {
