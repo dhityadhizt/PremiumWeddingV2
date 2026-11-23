@@ -1,12 +1,12 @@
 /**
  * Parallax Abstract Watercolor Splash Effect
  * - Berada 1 tingkat di atas layer background (z-index: 2, tepat di atas ::after z-index: 1)
- * - Efek parallax: saat halaman di-scroll, bercak tertinggal secara alami sesuai faktor parallax
- * - Palet: ["#000000", "#FFFFFF", "#4169E1"]
+ * - Efek parallax mengikuti arah pergeseran background saat di-scroll
+ * - Palet warna referensi: biru dongker/navy, biru keabu-abuan lembut, dan aksen emas
  */
 export class WatercolorSplash {
   constructor(options = {}) {
-    this.colors = options.colors || ["#000000", "#FFFFFF", "#4169E1"];
+    this.colors = options.colors || ["#162A4A", "#2B4C7E", "#8EA4C0", "#C5A059"];
     this.splashImages = options.splashImages || [
       "src/assets/images/watercolor-abstract-1.png",
       "src/assets/images/watercolor-abstract-2.png",
@@ -17,11 +17,12 @@ export class WatercolorSplash {
       "main > section#bride, main > section.hadist, main > section.time, main > section.galeri, main > section.wishas";
     this.maxActivePerSection = options.maxActivePerSection ?? 5;
     this.spawnInterval = options.spawnInterval ?? 1200;
-    this.minSize = options.minSize ?? 135;
-    this.maxSize = options.maxSize ?? 255;
+    this.minSize = options.minSize ?? 230;
+    this.maxSize = options.maxSize ?? 430;
     this.minDuration = options.minDuration ?? 3600;
     this.maxDuration = options.maxDuration ?? 6000;
-    this.parallaxFactor = options.parallaxFactor ?? -0.28; // Negatif agar bercak tertinggal ke atas saat scroll turun
+    // Faktor positif agar pergeseran parallax mengikuti arah gerak background saat scroll
+    this.parallaxFactor = options.parallaxFactor ?? 0.35;
     this.blendMode = options.blendMode || "multiply"; // "multiply" | "screen"
     this.interactive = options.interactive ?? true;
 
@@ -94,7 +95,6 @@ export class WatercolorSplash {
         if (this.blendMode === "screen") {
           container.classList.add("blend-screen");
         }
-        // Tempatkan tepat setelah layer background (::after) di dalam section
         section.appendChild(container);
       }
       return { section, container };
@@ -108,7 +108,9 @@ export class WatercolorSplash {
     for (const item of this.items) {
       if (!item.parallaxEl || !item.section) continue;
       const rect = item.section.getBoundingClientRect();
-      // Hitung offset relatif posisi section terhadap pusat viewport
+      // Ketika halaman di-scroll ke bawah, section bergerak ke atas (rect.top berkurang).
+      // Nilai deltaFromCenter bernilai positif saat section bergeser ke atas, sehingga parallaxFactor positif
+      // menggeser splash mengikuti arah pergerakan background secara halus.
       const sectionCenter = rect.top + rect.height * 0.5;
       const deltaFromCenter = vh * 0.5 - sectionCenter;
       const offsetPx = deltaFromCenter * this.parallaxFactor * item.speedMultiplier;
@@ -163,10 +165,10 @@ export class WatercolorSplash {
     const duration = this.minDuration + Math.random() * (this.maxDuration - this.minDuration);
     const rotation = `${Math.floor(Math.random() * 360)}deg`;
     const maxScale = (0.95 + Math.random() * 0.35).toFixed(2);
-    const isWhite = color.toUpperCase() === "#FFFFFF";
-    const peakOpacity = isWhite ? "0.65" : "0.48";
-    const midOpacity = isWhite ? "0.42" : "0.30";
-    const speedMultiplier = (0.75 + Math.random() * 0.65).toFixed(2);
+    const isLightOrGold = ["#8EA4C0", "#C5A059"].includes(color.toUpperCase());
+    const peakOpacity = isLightOrGold ? "0.56" : "0.44";
+    const midOpacity = isLightOrGold ? "0.36" : "0.28";
+    const speedMultiplier = (0.8 + Math.random() * 0.5).toFixed(2);
 
     const parallaxWrapper = document.createElement("div");
     parallaxWrapper.className = "watercolor-splash-parallax";
@@ -198,7 +200,6 @@ export class WatercolorSplash {
     };
     this.items.push(entryRecord);
 
-    // Sinkronkan posisi parallax awal saat muncul
     this._updateParallax();
 
     window.setTimeout(() => {
@@ -258,7 +259,7 @@ export class WatercolorSplash {
 
 function startWatercolorSplash() {
   const splashEffect = new WatercolorSplash({
-    colors: ["#000000", "#FFFFFF", "#4169E1"],
+    colors: ["#162A4A", "#2B4C7E", "#8EA4C0", "#C5A059"],
     splashImages: [
       "src/assets/images/watercolor-abstract-1.png",
       "src/assets/images/watercolor-abstract-2.png",
@@ -266,7 +267,9 @@ function startWatercolorSplash() {
     ],
     maxActivePerSection: 5,
     spawnInterval: 1200,
-    parallaxFactor: -0.28,
+    minSize: 230,
+    maxSize: 430,
+    parallaxFactor: 0.35,
     blendMode: "multiply",
     interactive: true
   });
