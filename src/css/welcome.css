@@ -57,7 +57,7 @@
   height: 100%;
   padding: 0 1.5rem 1.75rem;
   margin: 0 auto;
-  gap: 0.65rem;
+  gap: 0.55rem;
 }
 
 /* =================================================_ */
@@ -66,10 +66,10 @@
 
 .welcome-photo-wrapper {
   width: 100%;
-  height: 49vh;
-  height: 49dvh;
-  max-height: 390px;
-  min-height: 245px;
+  height: 46vh;
+  height: 46dvh;
+  max-height: 365px;
+  min-height: 230px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -143,7 +143,7 @@
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  margin: 0.15rem 0 -0.1rem;
+  margin: 0.2rem 0 -0.1rem;
   pointer-events: none;
 
   /* Animasi Masuk */
@@ -159,9 +159,9 @@
 }
 
 .welcome-ornament img {
-  width: 68%;
-  max-width: 240px;
-  max-height: 46px;
+  width: 88%;
+  max-width: 340px;
+  max-height: 76px;
   height: auto;
   object-fit: contain;
   display: block;
@@ -179,7 +179,7 @@
   width: 100%;
   flex: 1;
   min-height: 0;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 .welcome-info > * {
@@ -301,14 +301,14 @@
 /* =================================================_ */
 @media screen and (max-height: 680px) {
   .welcome-content {
-    gap: 0.45rem;
-    padding-bottom: 1.15rem;
+    gap: 0.4rem;
+    padding-bottom: 1.1rem;
   }
 
   .welcome-photo-wrapper {
-    height: 43vh;
-    height: 43dvh;
-    min-height: 200px;
+    height: 40vh;
+    height: 40dvh;
+    min-height: 190px;
   }
 
   .welcome-photo-frame {
@@ -316,8 +316,9 @@
   }
 
   .welcome-ornament img {
-    max-width: 190px;
-    max-height: 36px;
+    width: 82%;
+    max-width: 270px;
+    max-height: 58px;
   }
 
   .welcome-couple-name {
