@@ -163,7 +163,7 @@ main > section.wishas > * {
 }
 
 /* ==========================================================
-   3. TOMBOL AUDIO & SALJU
+   3. TOMBOL AUDIO & EFEK SPLASH WATERCOLOUR
    ========================================================== */
 .audio button {
   width: 2rem;
@@ -193,24 +193,15 @@ main > section.wishas > * {
   animation: rotate 3s linear infinite;
 }
 
-.snow-container {
+#watercolor-splash-canvas {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   pointer-events: none;
-  z-index: 999;
-  overflow: hidden;
-}
-
-.snow-container .snowflake {
-  position: absolute;
-  top: -10%;
-  color: #ffffff;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
-  opacity: 0.9;
-  animation: snowFall linear infinite;
+  z-index: 120;
 }
 
 @keyframes rotate {
@@ -219,24 +210,5 @@ main > section.wishas > * {
   }
   100% {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes snowFall {
-  0% {
-    top: -10%;
-    transform: translateX(0) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.9;
-  }
-  50% {
-    transform: translateX(20px) rotate(180deg);
-  }
-  100% {
-    top: 105%;
-    transform: translateX(-20px) rotate(360deg);
-    opacity: 0.2;
   }
 }
