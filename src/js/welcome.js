@@ -6,13 +6,13 @@ export const welcome = () => {
     const homeElement = document.querySelector('.home');
     const navbarElement = document.querySelector('header nav');
 
-    // Mengambil elemen yang sudah ada di index.html (Tidak dibungkus ulang otomatis)
+    // Mengambil elemen yang sudah ada di index.html
     const welcomeContainer = document.querySelector('.welcome-content');
-    const ornamentTop = welcomeContainer ? welcomeContainer.querySelector('.welcome-ornament.top') : null;
-    const ornamentBottom = welcomeContainer ? welcomeContainer.querySelector('.welcome-ornament.bottom') : null;
     const welcomeInfo = welcomeContainer ? welcomeContainer.querySelector('.welcome-info') : null;
     
-    const figureElement = welcomeInfo ? welcomeInfo.querySelector('figure') : null;
+    // Cari figure di dalam welcomeContainer (mendukung posisi di atas maupun di dalam welcome-info)
+    const figureElement = welcomeContainer ? welcomeContainer.querySelector('figure') : null;
+    const coupleNameElement = welcomeInfo ? welcomeInfo.querySelector('.welcome-couple-name') : null;
     const weddingToElement = welcomeInfo ? welcomeInfo.querySelector('p') : null;
 
     const audioElements = document.querySelector('.audio');
@@ -22,10 +22,17 @@ export const welcome = () => {
 
     const generateFigureContent = (bride) => {
         const {L: {name: brideLName}, P: {name: bridePName}, couple: coupleImage} = bride;
+        const firstL = brideLName.split(' ')[0];
+        const firstP = bridePName.split(' ')[0];
+
+        if (coupleNameElement) {
+            coupleNameElement.textContent = `${firstL} & ${firstP}`;
+        }
+
         return `
-            <img src="${coupleImage}" alt="couple animation">
+            <img src="${coupleImage}" alt="${firstL} &amp; ${firstP}">
             <figcaption>
-                ${brideLName.split(' ')[0]} & ${bridePName.split(' ')[0]}
+                ${firstL} & ${firstP}
             </figcaption>`;
     };
 
@@ -88,16 +95,6 @@ export const welcome = () => {
     }
 
     const initializeWelcome = () => {
-        if (ornamentTop && !ornamentTop.src) {
-            ornamentTop.src = "./src/assets/images/bar.png";
-            ornamentTop.alt = "Ornament Top";
-        }
-
-        if (ornamentBottom && !ornamentBottom.src) {
-            ornamentBottom.src = "./src/assets/images/bar.png";
-            ornamentBottom.alt = "Ornament Bottom";
-        }
-
         if (figureElement) {
             figureElement.innerHTML = generateFigureContent(data.bride);
         }
