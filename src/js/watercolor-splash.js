@@ -1,7 +1,7 @@
 /**
  * Abstract Watercolor Splash Effect
  * Palet: ["#000000", "#FFFFFF", "#4169E1"]
- * Menggunakan PNG transparan berbentuk percikan cat air abstrak berserakan.
+ * Berada 1 tingkat di atas layer background (z-index: 3).
  */
 export class WatercolorSplash {
   constructor(options = {}) {
@@ -12,20 +12,67 @@ export class WatercolorSplash {
       "src/assets/images/watercolor-abstract-3.png"
     ];
     this.maxActive = options.maxActive ?? 10;
-    this.spawnInterval = options.spawnInterval ?? 1150;
+    this.spawnInterval = options.spawnInterval ?? 950;
     this.minSize = options.minSize ?? 130;
-    this.maxSize = options.maxSize ?? 260;
+    this.maxSize = options.maxSize ?? 250;
     this.minDuration = options.minDuration ?? 3400;
-    this.maxDuration = options.maxDuration ?? 5800;
-    this.blendMode = options.blendMode || "multiply"; // "multiply" | "screen"
+    this.maxDuration = options.maxDuration ?? 5600;
+    this.blendMode = options.blendMode || "multiply";
     this.interactive = options.interactive ?? true;
 
     this.container = null;
     this.timerId = null;
+    this.loadedImages = new Map();
+    this.tintedCache = new Map();
     this._onPointerDown = this._onPointerDown.bind(this);
   }
 
-  init() {
+  _preloadImages() {
+    return Promise.all(
+      this.splashImages.map(
+        (src) =>
+          new Promise((resolve) => {
+            if (this.loadedImages.has(src)) {
+              resolve(this.loadedImages.get(src));
+              return;
+            }
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+              this.loadedImages.set(src, img);
+              resolve(img);
+            };
+            img.onerror = () => resolve(null);
+            img.src = src;
+          })
+      )
+    );
+  }
+
+  _getTintedDataUrl(img, src, color) {
+    const cacheKey = `${src}__${color.toUpperCase()}`;
+    if (this.tintedCache.has(cacheKey)) {
+      return this.tintedCache.get(cacheKey);
+    }
+
+    const canvas = document.createElement("canvas");
+    const w = img.naturalWidth || img.width || 300;
+    const h = img.naturalHeight || img.height || 300;
+    canvas.width = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, w, h);
+    ctx.globalCompositeOperation = "source-in";
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, w, h);
+
+    const url = canvas.toDataURL("image/png");
+    this.tintedCache.set(cacheKey, url);
+    return url;
+  }
+
+  async init() {
     if (this.container) return;
 
     const existing = document.querySelector(".watercolor-splash-container");
@@ -42,7 +89,9 @@ export class WatercolorSplash {
       this.container = container;
     }
 
-    const initialCount = Math.min(3, this.maxActive);
+    await this._preloadImages();
+
+    const initialCount = Math.min(4, this.maxActive);
     for (let i = 0; i < initialCount; i++) {
       this.spawnSplash();
     }
@@ -60,25 +109,25 @@ export class WatercolorSplash {
 
   _onPointerDown(event) {
     if (!this.container) return;
-    if (this.container.childElementCount >= this.maxActive + 4) return;
+    if (this.container.childElementCount >= this.maxActive + 5) return;
     this.spawnSplash(event.clientX, event.clientY, true);
-  }
-
-  _createSplashElement(color) {
-    const imgSrc = this.splashImages[Math.floor(Math.random() * this.splashImages.length)];
-    const tintEl = document.createElement("div");
-    tintEl.className = "watercolor-splash-tint";
-    tintEl.style.setProperty("--splash-color", color);
-    tintEl.style.setProperty("--splash-mask", `url("${imgSrc}")`);
-    return tintEl;
   }
 
   spawnSplash(x = null, y = null, isTap = false) {
     if (!this.container) return;
 
+    const validEntries = this.splashImages
+      .map((src) => ({ src, img: this.loadedImages.get(src) }))
+      .filter((entry) => Boolean(entry.img));
+
+    if (validEntries.length === 0) return;
+
+    const chosen = validEntries[Math.floor(Math.random() * validEntries.length)];
+    const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+    const tintedSrc = this._getTintedDataUrl(chosen.img, chosen.src, color);
+
     const posX = x ?? Math.random() * window.innerWidth;
     const posY = y ?? Math.random() * window.innerHeight;
-    const color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
     const size = isTap
       ? this.minSize * 0.72 + Math.random() * (this.maxSize - this.minSize) * 0.6
@@ -88,8 +137,8 @@ export class WatercolorSplash {
     const rotation = `${Math.floor(Math.random() * 360)}deg`;
     const maxScale = (0.95 + Math.random() * 0.35).toFixed(2);
     const isWhite = color.toUpperCase() === "#FFFFFF";
-    const peakOpacity = isWhite ? "0.62" : "0.42";
-    const midOpacity = isWhite ? "0.40" : "0.26";
+    const peakOpacity = isWhite ? "0.65" : "0.45";
+    const midOpacity = isWhite ? "0.42" : "0.28";
 
     const splashEl = document.createElement("div");
     splashEl.className = "watercolor-splash";
@@ -103,7 +152,12 @@ export class WatercolorSplash {
     splashEl.style.setProperty("--splash-mid-opacity", midOpacity);
     splashEl.style.animation = `watercolorSpread ${duration}ms cubic-bezier(0.22, 0.85, 0.36, 1) forwards`;
 
-    splashEl.appendChild(this._createSplashElement(color));
+    const imgEl = document.createElement("img");
+    imgEl.src = tintedSrc;
+    imgEl.alt = "";
+    imgEl.decoding = "async";
+    splashEl.appendChild(imgEl);
+
     this.container.appendChild(splashEl);
 
     window.setTimeout(() => {
@@ -124,7 +178,7 @@ export class WatercolorSplash {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function startWatercolorSplash() {
   const splashEffect = new WatercolorSplash({
     colors: ["#000000", "#FFFFFF", "#4169E1"],
     splashImages: [
@@ -133,9 +187,15 @@ document.addEventListener("DOMContentLoaded", () => {
       "src/assets/images/watercolor-abstract-3.png"
     ],
     maxActive: 10,
-    spawnInterval: 1150,
+    spawnInterval: 950,
     blendMode: "multiply",
     interactive: true
   });
   splashEffect.init();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", startWatercolorSplash);
+} else {
+  startWatercolorSplash();
+}
