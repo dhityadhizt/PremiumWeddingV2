@@ -32,21 +32,6 @@
   transition: opacity 1s ease, visibility 1s ease;
 }
 
-/* Lapisan gradasi lembut agar teks di bagian tengah-bawah kontras & bersih */
-.welcome::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.85) 54%,
-    rgba(255, 255, 255, 0.96) 100%
-  );
-  z-index: 0;
-  pointer-events: none;
-}
-
 .welcome.active {
   opacity: 1;
   visibility: visible;
