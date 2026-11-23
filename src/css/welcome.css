@@ -5,9 +5,10 @@
 .welcome {
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
   text-align: center;
   position: fixed;
@@ -20,6 +21,7 @@
   overflow: hidden;
 
   /* Background image solid */
+  background-color: #fafafa;
   background-image: url('../assets/images/bg.jpeg');
   background-size: cover;
   background-position: center;
@@ -46,33 +48,41 @@
   transition: opacity 1s ease, visibility 1s ease;
 }
 
-/* Container Konten */
+/* Container Konten (Orientasi Vertikal Potret / Smartphone-Friendly) */
 .welcome-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
-  max-width: 500px;
-  padding: 0 1.5rem;
+  max-width: 480px;
+  height: 100%;
+  padding: 0 1.5rem 2rem;
+  margin: 0 auto;
+  position: relative;
   transform-style: preserve-3d;
 }
 
 /* --- ORNAMEN ATAS --- */
 .welcome-ornament.top {
+  position: absolute;
+  top: 0;
+  left: 50%;
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
   height: auto;
   object-fit: contain;
+  pointer-events: none;
+  z-index: 1;
   opacity: 0;
-  transform: translateY(-20px) translateZ(60px) rotate(0deg);
+  transform: translateX(-50%) translateY(-20px) translateZ(60px) rotate(0deg);
   transition: opacity 0.8s ease, transform 0.8s ease;
   will-change: transform;
 }
 
 .welcome.active .welcome-ornament.top {
   opacity: 0.9;
-  transform: translateY(0) translateZ(60px) rotate(0deg);
+  transform: translateX(-50%) translateY(0) translateZ(60px) rotate(0deg);
   transition-delay: 1.6s; 
   animation: swayOrnamentTop 6s ease-in-out infinite;
   animation-delay: 2.2s; 
@@ -83,7 +93,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
 }
 
 .welcome-info > * {
@@ -100,7 +114,7 @@
   transition-delay: 0.8s;
 }
 
-/* 2. Foto / Animasi Pasangan */
+/* 2. Foto / Bingkai Kubah Terbalik di Bagian Atas (Mendominasi 50-60% Ruang Atas) */
 .welcome.active .welcome-info > figure {
   opacity: 1;
   transform: translateY(0);
@@ -124,19 +138,24 @@
 
 /* --- ORNAMEN BAWAH --- */
 .welcome-ornament.bottom {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
   height: auto;
   object-fit: contain;
+  pointer-events: none;
+  z-index: 1;
   opacity: 0;
-  transform: translateY(20px) translateZ(30px) rotate(0deg);
+  transform: translateX(-50%) translateY(20px) translateZ(30px) rotate(0deg);
   transition: opacity 0.8s ease, transform 0.8s ease;
   will-change: transform;
 }
 
 .welcome.active .welcome-ornament.bottom {
   opacity: 0.9;
-  transform: translateY(0) translateZ(30px) rotate(0deg);
+  transform: translateX(-50%) translateY(0) translateZ(30px) rotate(0deg);
   transition-delay: 1.8s;
   animation: swayOrnamentBottom 7.5s ease-in-out infinite;
   animation-delay: 2.4s; 
@@ -147,95 +166,160 @@
 /* =================================================_ */
 @keyframes swayOrnamentTop {
   0%, 100% {
-    transform: translateY(0) translateZ(60px) rotate(0deg);
+    transform: translateX(-50%) translateY(0) translateZ(60px) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px) translateZ(60px) rotate(1deg);
+    transform: translateX(-50%) translateY(-8px) translateZ(60px) rotate(1deg);
   }
 }
 
 @keyframes swayOrnamentBottom {
   0%, 100% {
-    transform: translateY(0) translateZ(30px) rotate(0deg);
+    transform: translateX(-50%) translateY(0) translateZ(30px) rotate(0deg);
   }
   50% {
-    transform: translateY(7px) translateZ(30px) rotate(-1deg);
+    transform: translateX(-50%) translateY(7px) translateZ(30px) rotate(-1deg);
   }
 }
 
 /* =================================================_ */
-/* DETAIL ELEMEN KONTEN                              */
+/* DETAIL ELEMEN KONTEN & BINGKAI KUBAH EMAS         */
 /* =================================================_ */
 
-.welcome h2 {
-  font-size: 2.8rem;
-  font-family: var(--sacramento);
-  font-weight: 700;
-  color: #0f172a;
-  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.9);
-  margin: 0.5rem 0;
-}
-
+/* Mengatur urutan visual agar Foto berada di paling atas (Focal Point), diikuti Judul & Teks di bagian tengah */
 .welcome figure {
+  order: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  margin: 0.8rem 0;
+  width: 100%;
+  margin: 0 0 1.1rem 0;
 }
 
+/* Bingkai Kubah / Kapsul Terbalik (Inverted Arch) dengan Garis Ganda Emas */
 .welcome figure img {
-  width: 9rem;
-  height: 9rem;
-  border-radius: 50%;
+  width: 72%;
+  max-width: 280px;
+  height: 52vh;
+  max-height: 410px;
+  min-height: 290px;
+  border-radius: 0 0 500px 500px;
   object-fit: cover;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  border: 3px solid #ffffff;
+  object-position: center top;
+
+  /* Garis Ganda Tipis Berwarna Emas */
+  border: 2.5px solid #b5945b;
+  border-top: none;
+  outline: 1.5px solid #d4b679;
+  outline-offset: -7px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14), 0 0 0 4px rgba(181, 148, 91, 0.22);
+  background-color: #ffffff;
 }
 
+/* Nama Pengantin (Figcaption) di Bagian Tengah */
 .welcome figure figcaption {
-  font-size: var(--fontSize-heading-base);
+  order: 2;
+  font-size: 2.3rem;
   font-family: var(--sacramento);
-  font-weight: 600;
-  color: #1a202c;
-  margin-top: 0.5rem;
-  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.8);
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 0.9rem;
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.95);
+}
+
+/* Subjudul "The Wedding Of" di Atas Nama Pengantin */
+.welcome h2 {
+  order: 2;
+  font-size: 1.1rem;
+  font-family: 'Josefin Sans', sans-serif;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #334155;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.95);
+  margin: 0.2rem 0 0.3rem;
+  text-align: center;
+}
+
+/* Area Teks Tamu Undangan (Center-Aligned di Bagian Tengah) */
+.welcome p {
+  order: 3;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #1e293b;
+  text-align: center;
+  max-width: 340px;
+  margin: 0.2rem auto 0.5rem;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.9);
 }
 
 .welcome p span {
-  font-size: 2rem;
-  margin: 0.5rem 0;
+  font-size: 1.45rem;
+  margin: 0.25rem 0;
   display: block;
   color: #0f172a;
   font-weight: 700;
-  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.9);
+}
+
+/* Wrapper Tombol Buka Undangan */
+.welcome-info > div {
+  order: 4;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.4rem;
 }
 
 /* --- TOMBOL BUKA UNDANGAN --- */
 .welcome button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   color: #ffffff;
-  background-color: #0f172a;
-  padding: 0.7rem 1.4rem;
-  border: none;
+  background-color: #0a3666;
+  padding: 0.7rem 1.5rem;
+  border: 1.5px solid #b5945b;
   transition: all 0.3s ease;
-  border-radius: 20px;
+  border-radius: 50px;
   cursor: pointer;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  margin-top: 1rem;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 16px rgba(10, 54, 102, 0.25);
+  margin-top: 0.4rem;
 }
 
 .welcome button:hover {
-  color: #0f172a;
+  color: #0a3666;
   background-color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px rgba(10, 54, 102, 0.3);
 }
 
 .welcome button i {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+}
+
+/* Penyesuaian Layar Kecil (HP Pendek) */
+@media screen and (max-height: 680px) {
+  .welcome figure img {
+    height: 45vh;
+    min-height: 240px;
+    max-width: 240px;
+  }
+
+  .welcome figure figcaption {
+    font-size: 2rem;
+    margin-top: 0.6rem;
+  }
+
+  .welcome p span {
+    font-size: 1.25rem;
+  }
 }
