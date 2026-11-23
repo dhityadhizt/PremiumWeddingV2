@@ -1,0 +1,496 @@
+.galeri {
+    width: 100%;
+    min-height: 100vh;
+    text-align: center;
+    padding: 4rem 8rem 12rem;
+    margin-top: -6rem;
+    position: relative;
+}
+
+.galeri .container {
+    width: 100%;
+    padding: 0 1.5rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 -1px 1px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.galeri .container h2, .galeri .galeri-modal-all h2 {
+    font-family: var(--sacramento);
+    font-size: var(--fontSize-heading-base);
+    font-weight: 400;
+    padding: 2rem 1rem 0.5rem;
+}
+
+.galeri .galeri-subtitle {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1.2rem;
+    padding: 0 1rem;
+}
+
+.galeri .container figure {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.galeri .container figure img {
+    width: 100%;
+    height: 35rem;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: var(--transition-small);
+}
+
+.galeri .galeri-caption {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    max-width: calc(100% - 2rem);
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.galeri .container ul {
+    padding: 0.5rem;
+    margin: 0.6rem auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    position: static;
+}
+
+.galeri .container ul li {
+    width: 1.4rem;
+    height: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 999px;
+    list-style-type: none;
+    cursor: pointer;
+    transition: var(--transition-small);
+}
+
+.galeri .container ul li:hover, .galeri .container ul li.active {
+    background-color: #111;
+    width: 2rem;
+}
+
+.galeri .container > button:nth-of-type(1),
+.galeri .container > button:nth-of-type(2) {
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.75);
+    background: none;
+    border: none;
+    position: absolute;
+    top: 23rem;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.galeri .container > button:nth-of-type(1) i:hover,
+.galeri .container > button:nth-of-type(2) i:hover {
+    color: #fff;
+}
+
+.galeri .container > button:nth-of-type(1) {
+    left: 2rem;
+}
+
+.galeri .container > button:nth-of-type(2) {
+    right: 2rem;
+}
+
+.galeri .galeri-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.galeri .galeri-actions button {
+    padding: 0.65rem 1.3rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    transition: var(--transition-small);
+}
+
+.galeri .btn-live-camera {
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #111;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.galeri .btn-live-camera:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+}
+
+.galeri #show-all-photos-btn {
+    background-color: #fff;
+    color: #111;
+    border: 1px solid #111;
+}
+
+.galeri #show-all-photos-btn:hover {
+    background-color: #111;
+    color: #fff;
+}
+
+.galeri .galeri-modal-all {
+    width: 100%;
+    height: 100vh;
+    padding: 2rem 8rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    z-index: 999;
+    overflow-y: auto;
+    transition: all .3s ease;
+    transform: scale(0);
+    opacity: 0;
+    transform-origin: bottom;
+}
+
+.galeri .galeri-modal-all.active {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.galeri .galeri-modal-all > div {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 -1px 1px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1.5rem;
+}
+
+.galeri .galeri-grid-item {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.galeri .galeri-grid-item img {
+    width: 100%;
+    height: 22rem;
+    object-fit: cover;
+    display: block;
+}
+
+.galeri .grid-guest-badge {
+    position: absolute;
+    bottom: 0.7rem;
+    left: 0.7rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 0.3rem 0.7rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.galeri .galeri-modal-all > button {
+    padding: 0;
+    font-size: 2.2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: fixed;
+    top: 1.2rem;
+    right: 1.5rem;
+}
+
+.live-camera-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.live-camera-modal.active {
+    display: flex;
+}
+
+.camera-modal-content {
+    background: #fff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 24px;
+    padding: 1.4rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.camera-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.camera-modal-header h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #111;
+}
+
+.camera-modal-header button {
+    background: #f2f2f2;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-guest-input input {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+}
+
+.camera-guest-input input:focus {
+    border-color: #111;
+}
+
+.camera-viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    max-height: 55vh;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-viewport video,
+.camera-viewport img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.camera-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.camera-overlay i {
+    font-size: 2.5rem;
+}
+
+.camera-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 0.6rem;
+}
+
+.btn-cam-shutter {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #111;
+    color: #fff;
+    border: 4px solid #e0e0e0;
+    font-size: 1.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+}
+
+.btn-cam-shutter:active {
+    transform: scale(0.92);
+}
+
+.btn-cam-secondary {
+    padding: 0.6rem 0.95rem;
+    border-radius: 14px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    color: #222;
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.btn-cam-primary {
+    padding: 0.65rem 1.2rem;
+    border-radius: 14px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+@media screen and (max-width: 768px) {
+    .galeri {
+        min-height: auto;
+        margin-top: -3rem;
+        padding: 3rem 1.2rem 1rem;
+    }
+
+    .galeri .container {
+        padding: 0 1rem 1.4rem;
+        border-radius: 28px;
+    }
+
+    .galeri .galeri-subtitle {
+        font-size: 0.82rem;
+        line-height: 1.4;
+        margin-bottom: 0.9rem;
+    }
+
+    .galeri .container figure img {
+        height: 15rem;
+    }
+
+    .galeri .galeri-caption {
+        top: 0.7rem;
+        left: 0.7rem;
+        font-size: 0.72rem;
+        padding: 0.3rem 0.7rem;
+    }
+
+    .galeri .container ul {
+        position: static;
+        margin: 0.5rem auto 0;
+        padding: 0.25rem;
+        gap: 0.35rem;
+    }
+
+    .galeri .container ul li {
+        width: 0.9rem;
+        height: 0.2rem;
+    }
+
+    .galeri .container ul li.active {
+        width: 1.5rem;
+    }
+
+    .galeri .container > button:nth-of-type(1),
+    .galeri .container > button:nth-of-type(2) {
+        top: 12.2rem;
+        font-size: 2.6rem;
+        width: auto;
+        height: auto;
+        padding: 0;
+    }
+
+    .galeri .container > button:nth-of-type(1) {
+        left: 1rem;
+    }
+
+    .galeri .container > button:nth-of-type(2) {
+        right: 1rem;
+    }
+
+    .galeri .galeri-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+        margin-top: 0.8rem;
+        width: 100%;
+    }
+
+    .galeri .galeri-actions button {
+        width: 100%;
+        padding: 0.6rem 0.7rem;
+        font-size: 0.78rem;
+        border-radius: 14px;
+        gap: 0.35rem;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .galeri .galeri-actions button i {
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+
+    .galeri .galeri-modal-all {
+        padding: 1rem 1rem 4rem;
+    }
+
+    .galeri .galeri-modal-all > div {
+        padding: 1.2rem;
+        grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+        gap: 1rem;
+    }
+}

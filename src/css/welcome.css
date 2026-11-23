@@ -1,0 +1,241 @@
+/* =================================================_ */
+/* WELCOME PAGE STYLING                              */
+/* =================================================_ */
+
+.welcome {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  color: #1a202c;
+  overflow: hidden;
+
+  /* Background image solid */
+  background-image: url('../assets/images/bg.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* Efek Fade In awal untuk Background */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease, visibility 1s ease;
+
+  /* Perspektif 3D Utama */
+  perspective: 1200px;
+}
+
+.welcome.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.welcome.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1s ease, visibility 1s ease;
+}
+
+/* Container Konten */
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 0 1.5rem;
+  transform-style: preserve-3d;
+}
+
+/* --- ORNAMEN ATAS --- */
+.welcome-ornament.top {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0;
+  transform: translateY(-20px) translateZ(60px) rotate(0deg);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  will-change: transform;
+}
+
+.welcome.active .welcome-ornament.top {
+  opacity: 0.9;
+  transform: translateY(0) translateZ(60px) rotate(0deg);
+  transition-delay: 1.6s; 
+  animation: swayOrnamentTop 6s ease-in-out infinite;
+  animation-delay: 2.2s; 
+}
+
+/* --- INFORMASI UTAMA & EFEK STAGGERED DI DALAMNYA --- */
+.welcome-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.welcome-info > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  will-change: opacity, transform;
+}
+
+/* 1. Judul ("The Wedding Of") */
+.welcome.active .welcome-info > h2 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.8s;
+}
+
+/* 2. Foto / Animasi Pasangan */
+.welcome.active .welcome-info > figure {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.0s;
+}
+
+/* 3. Teks Kepada Yth / Nama Tamu */
+.welcome.active .welcome-info > p {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.2s;
+}
+
+/* 4. Tombol "Buka Undangan" */
+.welcome.active .welcome-info > div,
+.welcome.active .welcome-info > button {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.4s;
+}
+
+/* --- ORNAMEN BAWAH --- */
+.welcome-ornament.bottom {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0;
+  transform: translateY(20px) translateZ(30px) rotate(0deg);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  will-change: transform;
+}
+
+.welcome.active .welcome-ornament.bottom {
+  opacity: 0.9;
+  transform: translateY(0) translateZ(30px) rotate(0deg);
+  transition-delay: 1.8s;
+  animation: swayOrnamentBottom 7.5s ease-in-out infinite;
+  animation-delay: 2.4s; 
+}
+
+/* =================================================_ */
+/* KEYFRAMES SWAY SMOOTH (Tanpa Jeda / Seamless)     */
+/* =================================================_ */
+@keyframes swayOrnamentTop {
+  0%, 100% {
+    transform: translateY(0) translateZ(60px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) translateZ(60px) rotate(1deg);
+  }
+}
+
+@keyframes swayOrnamentBottom {
+  0%, 100% {
+    transform: translateY(0) translateZ(30px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(7px) translateZ(30px) rotate(-1deg);
+  }
+}
+
+/* =================================================_ */
+/* DETAIL ELEMEN KONTEN                              */
+/* =================================================_ */
+
+.welcome h2 {
+  font-size: 2.8rem;
+  font-family: var(--sacramento);
+  font-weight: 700;
+  color: #0f172a;
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.9);
+  margin: 0.5rem 0;
+}
+
+.welcome figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0.8rem 0;
+}
+
+.welcome figure img {
+  width: 9rem;
+  height: 9rem;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: 3px solid #ffffff;
+}
+
+.welcome figure figcaption {
+  font-size: var(--fontSize-heading-base);
+  font-family: var(--sacramento);
+  font-weight: 600;
+  color: #1a202c;
+  margin-top: 0.5rem;
+  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.8);
+}
+
+.welcome p span {
+  font-size: 2rem;
+  margin: 0.5rem 0;
+  display: block;
+  color: #0f172a;
+  font-weight: 700;
+  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.8);
+}
+
+/* --- TOMBOL BUKA UNDANGAN --- */
+.welcome button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #ffffff;
+  background-color: #0f172a;
+  padding: 0.7rem 1.4rem;
+  border: none;
+  transition: all 0.3s ease;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  margin-top: 1rem;
+}
+
+.welcome button:hover {
+  color: #0f172a;
+  background-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.welcome button i {
+  font-size: 1.2rem;
+}
