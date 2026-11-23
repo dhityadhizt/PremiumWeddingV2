@@ -55,10 +55,9 @@ main > section.wishas {
   position: relative;
   padding: 3rem 1rem;
   width: 100%;
-  overflow: hidden; /* Mencegah elemen mask keluar batas */
+  overflow: hidden;
 }
 
-/* Lapisan background gambar dengan efek fade transparan di atas & bawah */
 main > section#bride::after,
 main > section.hadist::after,
 main > section.time::after,
@@ -76,7 +75,6 @@ main > section.wishas::after {
   background-position: center;
   background-repeat: no-repeat;
 
-  /* Efek fade transparan (Atas & Bawah memudar) */
   -webkit-mask-image: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0) 0%,
@@ -95,7 +93,6 @@ main > section.wishas::after {
   z-index: 1;
 }
 
-/* Lapisan overlay putih untuk meredupkan background */
 main > section#bride::before,
 main > section.hadist::before,
 main > section.time::before,
@@ -111,7 +108,6 @@ main > section.wishas::before {
   z-index: 2;
 }
 
-/* Memastikan seluruh konten seksi berada di atas lapisan background & overlay */
 main > section#bride > *,
 main > section.hadist > *,
 main > section.time > *,
@@ -136,7 +132,6 @@ main > section.wishas > * {
   animation: swaySmooth 4s ease-in-out infinite alternate;
 }
 
-/* Penyesuaian khusus layar HP agar jarak atas-bawah sangat rapat & pas */
 @media screen and (max-width: 768px) {
   .divider-ornament {
     max-width: 350px;
@@ -149,7 +144,6 @@ main > section.wishas > * {
   }
 }
 
-/* Keyframe Animasi Bergoyang & Melayang Halus */
 @keyframes swaySmooth {
   0% {
     transform: translateY(0) rotate(-1deg) scale(1);
@@ -163,7 +157,7 @@ main > section.wishas > * {
 }
 
 /* ==========================================================
-   3. TOMBOL AUDIO & INTERACTIVE WATERCOLOR SPLASH
+   3. TOMBOL AUDIO & ABSTRACT WATERCOLOR SPLASH
    ========================================================== */
 .audio button {
   width: 2rem;
@@ -202,7 +196,7 @@ main > section.wishas > * {
   }
 }
 
-/* Layer bercak cat air interaktif */
+/* Layer bercak cat air abstrak */
 .watercolor-splash-container {
   position: fixed;
   inset: 0;
@@ -224,30 +218,38 @@ main > section.wishas > * {
   transform-origin: center center;
   will-change: transform, opacity;
   pointer-events: none;
+  border-radius: 0 !important;
 }
 
-.watercolor-splash svg,
-.watercolor-splash img {
-  display: block;
+.watercolor-splash-tint {
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  background-color: var(--splash-color, #4169E1);
+  -webkit-mask-image: var(--splash-mask);
+  mask-image: var(--splash-mask);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 @keyframes watercolorSpread {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3) rotate(var(--splash-rot, 0deg));
+    transform: translate(-50%, -50%) scale(0.32) rotate(var(--splash-rot, 0deg));
   }
   25% {
-    opacity: var(--splash-peak-opacity, 0.42);
+    opacity: var(--splash-peak-opacity, 0.48);
   }
   70% {
-    opacity: var(--splash-mid-opacity, 0.28);
-    transform: translate(-50%, -50%) scale(var(--splash-scale, 1.15)) rotate(calc(var(--splash-rot, 0deg) + 4deg));
+    opacity: var(--splash-mid-opacity, 0.32);
+    transform: translate(-50%, -50%) scale(var(--splash-scale, 1.15)) rotate(calc(var(--splash-rot, 0deg) + 3deg));
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(calc(var(--splash-scale, 1.15) * 1.08)) rotate(calc(var(--splash-rot, 0deg) + 8deg));
+    transform: translate(-50%, -50%) scale(calc(var(--splash-scale, 1.15) * 1.08)) rotate(calc(var(--splash-rot, 0deg) + 6deg));
   }
 }
