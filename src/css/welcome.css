@@ -57,7 +57,7 @@
   height: 100%;
   padding: 0 1.5rem 1.75rem;
   margin: 0 auto;
-  gap: 1.1rem;
+  gap: 0.65rem;
 }
 
 /* =================================================_ */
@@ -66,10 +66,10 @@
 
 .welcome-photo-wrapper {
   width: 100%;
-  height: 54vh;
-  height: 54dvh;
-  max-height: 430px;
-  min-height: 270px;
+  height: 49vh;
+  height: 49dvh;
+  max-height: 390px;
+  min-height: 245px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -134,6 +134,40 @@
 }
 
 /* =================================================_ */
+/* ORNAMEN PEMBATAS (CENTER.PNG)                      */
+/* =================================================_ */
+
+.welcome-ornament {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  margin: 0.15rem 0 -0.1rem;
+  pointer-events: none;
+
+  /* Animasi Masuk */
+  opacity: 0;
+  transform: scale(0.92) translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.welcome.active .welcome-ornament {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition-delay: 0.45s;
+}
+
+.welcome-ornament img {
+  width: 68%;
+  max-width: 240px;
+  max-height: 46px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* =================================================_ */
 /* 2. BAGIAN TENGAH (TEKS TERPUSAT & RAPI)           */
 /* =================================================_ */
 
@@ -145,7 +179,7 @@
   width: 100%;
   flex: 1;
   min-height: 0;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 
 .welcome-info > * {
@@ -201,7 +235,7 @@
   font-weight: 700;
   line-height: 1.15;
   color: #0f172a;
-  margin: 0.1rem 0 0.25rem;
+  margin: 0.1rem 0 0.2rem;
   text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
 }
 
@@ -210,7 +244,7 @@
   font-size: 0.9rem;
   line-height: 1.45;
   color: #334155;
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.35rem;
 }
 
 .welcome-guest span {
@@ -223,7 +257,7 @@
 
 /* --- TOMBOL BUKA UNDANGAN --- */
 .welcome-action {
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
 }
 
 .welcome button {
@@ -267,18 +301,23 @@
 /* =================================================_ */
 @media screen and (max-height: 680px) {
   .welcome-content {
-    gap: 0.75rem;
-    padding-bottom: 1.25rem;
+    gap: 0.45rem;
+    padding-bottom: 1.15rem;
   }
 
   .welcome-photo-wrapper {
-    height: 47vh;
-    height: 47dvh;
-    min-height: 220px;
+    height: 43vh;
+    height: 43dvh;
+    min-height: 200px;
   }
 
   .welcome-photo-frame {
     width: 65%;
+  }
+
+  .welcome-ornament img {
+    max-width: 190px;
+    max-height: 36px;
   }
 
   .welcome-couple-name {
