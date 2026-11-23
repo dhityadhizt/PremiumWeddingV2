@@ -75,6 +75,7 @@ main > section.wishas::after {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: scroll;
 
   -webkit-mask-image: linear-gradient(
     to bottom,
@@ -221,8 +222,8 @@ main > section.wishas > :not(.watercolor-splash-container) {
   position: absolute;
   left: var(--splash-x, 50%);
   top: var(--splash-y, 50%);
-  width: var(--splash-size, 180px);
-  height: var(--splash-size, 180px);
+  width: var(--splash-size, 320px);
+  height: var(--splash-size, 320px);
   transform: translate3d(-50%, calc(-50% + var(--parallax-y, 0px)), 0);
   will-change: transform;
   pointer-events: none;
