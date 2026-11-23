@@ -70,28 +70,28 @@ main > section.wishas::after {
   left: 0;
   width: 100%;
   height: 100%;
-  
+
   background-image: url('../images/bg2.jpeg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  
+
   /* Efek fade transparan (Atas & Bawah memudar) */
   -webkit-mask-image: linear-gradient(
-    to bottom, 
-    rgba(0, 0, 0, 0) 0%, 
-    rgba(0, 0, 0, 1) 15%, 
-    rgba(0, 0, 0, 1) 85%, 
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 15%,
+    rgba(0, 0, 0, 1) 85%,
     rgba(0, 0, 0, 0) 100%
   );
   mask-image: linear-gradient(
-    to bottom, 
-    rgba(0, 0, 0, 0) 0%, 
-    rgba(0, 0, 0, 1) 15%, 
-    rgba(0, 0, 0, 1) 85%, 
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 15%,
+    rgba(0, 0, 0, 1) 85%,
     rgba(0, 0, 0, 0) 100%
   );
-  
+
   z-index: 1;
 }
 
@@ -163,7 +163,7 @@ main > section.wishas > * {
 }
 
 /* ==========================================================
-   3. TOMBOL AUDIO & EFEK SPLASH WATERCOLOUR
+   3. TOMBOL AUDIO & INTERACTIVE WATERCOLOR SPLASH
    ========================================================== */
 .audio button {
   width: 2rem;
@@ -193,22 +193,61 @@ main > section.wishas > * {
   animation: rotate 3s linear infinite;
 }
 
-#watercolor-splash-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
-  pointer-events: none;
-  z-index: 120;
-}
-
 @keyframes rotate {
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Layer bercak cat air interaktif */
+.watercolor-splash-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  pointer-events: none;
+  z-index: 998;
+  overflow: hidden;
+  mix-blend-mode: multiply;
+}
+
+.watercolor-splash-container.blend-screen {
+  mix-blend-mode: screen;
+}
+
+.watercolor-splash {
+  position: absolute;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.watercolor-splash svg,
+.watercolor-splash img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@keyframes watercolorSpread {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3) rotate(var(--splash-rot, 0deg));
+  }
+  25% {
+    opacity: var(--splash-peak-opacity, 0.42);
+  }
+  70% {
+    opacity: var(--splash-mid-opacity, 0.28);
+    transform: translate(-50%, -50%) scale(var(--splash-scale, 1.15)) rotate(calc(var(--splash-rot, 0deg) + 4deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(calc(var(--splash-scale, 1.15) * 1.08)) rotate(calc(var(--splash-rot, 0deg) + 8deg));
   }
 }
