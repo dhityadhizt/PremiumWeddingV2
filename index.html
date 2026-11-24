@@ -197,6 +197,9 @@
             </button>
         </div>
 
+        <!-- Input kamera native lintas perangkat (Android, iOS, Desktop) -->
+        <input type="file" id="native-camera-input" accept="image/*" capture="environment" style="display: none;">
+
         <div id="live-camera-modal" class="live-camera-modal" aria-hidden="true">
             <div class="camera-modal-content">
                 <div class="camera-modal-header">
@@ -216,7 +219,7 @@
                     <img id="live-photo-preview" alt="Preview Hasil Foto" style="display: none;">
                     <div id="camera-loading-overlay" class="camera-overlay" style="display: none;">
                         <i class='bx bx-loader-alt bx-spin'></i>
-                        <span id="camera-status-text">Mengunggah foto PNG ke Galeri...</span>
+                        <span id="camera-status-text">Mengunggah foto ke Galeri...</span>
                     </div>
                 </div>
 
@@ -228,11 +231,10 @@
                     <button type="button" id="capture-photo-btn" class="btn-cam-shutter" title="Jepret Foto">
                         <i class='bx bxs-camera'></i>
                     </button>
-                    <label for="fallback-camera-input" class="btn-cam-secondary" title="Kamera Bawaan HP">
+                    <button type="button" id="trigger-native-cam-btn" class="btn-cam-secondary" title="Kamera Bawaan HP">
                         <i class='bx bx-mobile-alt'></i>
                         <span>Kamera HP</span>
-                    </label>
-                    <input type="file" id="fallback-camera-input" accept="image/*" capture="environment" style="display: none;">
+                    </button>
                 </div>
 
                 <div class="camera-controls" id="camera-preview-controls" style="display: none;">
@@ -320,7 +322,7 @@
     <h4> اَلْحَمْدُ للَّهِ رَبِّ الْعالَمِينَ</h4>
     <div>
         <p>Build with <span>dhityadhizt</span></p>
-        <a href="https://github.com/sdprdh" target="_blank" rel="noopener">
+        <a href="https://github.com/dhityadhizt" target="_blank" rel="noopener">
             <i class="bx bxl-github"></i>
             <span>dhityadhizt</span>
         </a>
