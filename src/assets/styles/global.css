@@ -211,21 +211,27 @@ main > section.wishas > :not(.watercolor-splash-container) {
   z-index: 2;
   overflow: hidden;
   mix-blend-mode: multiply;
+  contain: layout style paint;
 }
 
 .watercolor-splash-container.blend-screen {
   mix-blend-mode: screen;
 }
 
-/* Wrapper parallax agar pergeseran scroll terpisah dari animasi spread */
+/* Wrapper parallax agar pergeseran scroll & pointer terpisah dari animasi spread */
 .watercolor-splash-parallax {
   position: absolute;
   left: var(--splash-x, 50%);
   top: var(--splash-y, 50%);
   width: var(--splash-size, 320px);
   height: var(--splash-size, 320px);
-  transform: translate3d(-50%, calc(-50% + var(--parallax-y, 0px)), 0);
+  transform: translate3d(
+    calc(-50% + var(--parallax-x, 0px)),
+    calc(-50% + var(--parallax-y, 0px)),
+    0
+  );
   will-change: transform;
+  backface-visibility: hidden;
   pointer-events: none;
   border-radius: 0 !important;
 }
@@ -236,6 +242,7 @@ main > section.wishas > :not(.watercolor-splash-container) {
   height: 100%;
   transform-origin: center center;
   will-change: transform, opacity;
+  backface-visibility: hidden;
   pointer-events: none;
   border-radius: 0 !important;
   opacity: 0;
