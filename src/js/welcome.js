@@ -8,10 +8,10 @@ export const welcome = () => {
 
     // Mengambil elemen yang sudah ada di index.html
     const welcomeContainer = document.querySelector('.welcome-content');
+    const ornamentCenter = welcomeContainer ? welcomeContainer.querySelector('.welcome-ornament.center') : null;
     const welcomeInfo = welcomeContainer ? welcomeContainer.querySelector('.welcome-info') : null;
-    
-    // Cari figure di dalam welcomeContainer (mendukung posisi di atas maupun di dalam welcome-info)
-    const figureElement = welcomeContainer ? welcomeContainer.querySelector('figure') : null;
+
+    const figureElement = welcomeInfo ? welcomeInfo.querySelector('figure') : null;
     const coupleNameElement = welcomeInfo ? welcomeInfo.querySelector('.welcome-couple-name') : null;
     const weddingToElement = welcomeInfo ? welcomeInfo.querySelector('p') : null;
 
@@ -21,19 +21,16 @@ export const welcome = () => {
     const iconButton = audioButton ? audioButton.querySelector('i') || audioButton.children[0] : null;
 
     const generateFigureContent = (bride) => {
-        const {L: {name: brideLName}, P: {name: bridePName}, couple: coupleImage} = bride;
-        const firstL = brideLName.split(' ')[0];
-        const firstP = bridePName.split(' ')[0];
-
-        if (coupleNameElement) {
-            coupleNameElement.textContent = `${firstL} & ${firstP}`;
-        }
-
+        const {couple: coupleImage} = bride;
         return `
-            <img src="${coupleImage}" alt="${firstL} &amp; ${firstP}">
-            <figcaption>
-                ${firstL} & ${firstP}
-            </figcaption>`;
+            <div class="arch-image-wrap">
+                <img src="${coupleImage}" alt="couple animation">
+            </div>`;
+    };
+
+    const generateCoupleName = (bride) => {
+        const {L: {name: brideLName}, P: {name: bridePName}} = bride;
+        return `${brideLName.split(' ')[0]} &amp; ${bridePName.split(' ')[0]}`;
     };
 
     const generateParameterContent = () => {
@@ -42,10 +39,10 @@ export const welcome = () => {
 
         if (weddingToElement) {
             if (params) {
-                weddingToElement.innerHTML = `Kepada Yth Bapak/Ibu/Saudara/i<br><span>${params}</span>`;
+                weddingToElement.innerHTML = `Kepada Yth Bapak/Ibu/Saudara/i<span>${params}</span>`;
                 if (name) name.value = params;
             } else {
-                weddingToElement.innerHTML = `Kepada Yth Bapak/Ibu/Saudara/i<br><span>You are invited</span>`;
+                weddingToElement.innerHTML = `Kepada Yth Bapak/Ibu/Saudara/i<span>You are invited</span>`;
             }
         }
     };
@@ -95,12 +92,21 @@ export const welcome = () => {
     }
 
     const initializeWelcome = () => {
+        if (ornamentCenter && !ornamentCenter.getAttribute('src')) {
+            ornamentCenter.src = "./src/assets/images/Center.png";
+            ornamentCenter.alt = "Ornament Center";
+        }
+
         if (figureElement) {
             figureElement.innerHTML = generateFigureContent(data.bride);
         }
-        
+
+        if (coupleNameElement) {
+            coupleNameElement.innerHTML = generateCoupleName(data.bride);
+        }
+
         generateParameterContent();
-        
+
         // Memicu kelas active agar animasi CSS berjalan sesuai urutan
         addClassElement(welcomeElement, 'active');
     };
