@@ -53,6 +53,20 @@
 </head>
 <body>
 
+<!-- Container Animasi Salju Turun -->
+<div class="snow-container" aria-hidden="true">
+    <i class="bx bx-snowflake snowflake" style="left: 5%; animation-duration: 8s; animation-delay: 0s; font-size: 0.8rem;"></i>
+    <i class="bx bxs-circle snowflake" style="left: 15%; animation-duration: 6s; animation-delay: 2s; font-size: 0.4rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 25%; animation-duration: 10s; animation-delay: 1s; font-size: 1rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 35%; animation-duration: 7s; animation-delay: 3s; font-size: 0.6rem;"></i>
+    <i class="bx bxs-circle snowflake" style="left: 45%; animation-duration: 9s; animation-delay: 0.5s; font-size: 0.5rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 55%; animation-duration: 6.5s; animation-delay: 4s; font-size: 0.9rem;"></i>
+    <i class="bx bxs-circle snowflake" style="left: 65%; animation-duration: 8.5s; animation-delay: 2.5s; font-size: 0.4rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 75%; animation-duration: 7.5s; animation-delay: 1.5s; font-size: 0.7rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 85%; animation-duration: 9.5s; animation-delay: 3.5s; font-size: 0.5rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 95%; animation-duration: 6s; animation-delay: 0.8s; font-size: 0.8rem;"></i>
+</div>
+
 <header>
     <nav role="navigation" aria-label="main navigation"></nav>
 </header>
@@ -62,30 +76,24 @@
         <!-- Wrapper Halaman Welcome -->
         <div class="welcome-content">
             
-            <!-- Area Atas (Focal Point): Bingkai Foto Melengkung Ganda Emas -->
-            <div class="welcome-photo-wrapper">
-                <figure class="welcome-photo-frame">
-                    <img src="./src/assets/images/couplenew.jpeg" alt="Aditya &amp; Diva">
-                </figure>
-            </div>
+            <!-- Ornamen Atas -->
+            <img src="src/assets/images/bar.png" alt="Ornament" class="welcome-ornament top">
 
-            <!-- Ornamen Pembatas antara Foto dan Teks -->
-            <div class="welcome-ornament" aria-hidden="true">
-                <img src="./src/assets/images/Center.png" alt="">
-            </div>
-
-            <!-- Area Tengah: Konten Teks Terpusat -->
+            <!-- Informasi Utama dengan Staggered di dalamnya -->
             <div class="welcome-info">
-                <h2 id="welcome-title" class="welcome-subtitle">The Wedding Of</h2>
-                <h1 class="welcome-couple-name">Aditya &amp; Diva</h1>
-                <p class="welcome-guest"></p>
-                <div class="welcome-action">
+                <h2 id="welcome-title" class="welcome-item">The Wedding Of</h2>
+                <figure class="welcome-item"></figure>
+                <p class="welcome-item"></p>
+                <div class="welcome-item">
                     <button type="button" aria-label="Buka Undangan">
                         <i class="bx bxs-envelope-open"></i>
                         <span>Buka Undangan</span>
                     </button>
                 </div>
             </div>
+
+            <!-- Ornamen Bawah -->
+            <img src="src/assets/images/bar.png" alt="Ornament" class="welcome-ornament bottom">
 
         </div>
     </section>
