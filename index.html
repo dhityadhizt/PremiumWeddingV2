@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Kamu diundang nih, Iya kamu.">
     <meta name="keywords" content="undangan pernikahan">
     <meta name="author" content="DhityaDhizt">
@@ -75,25 +75,32 @@
     <section class="welcome" aria-labelledby="welcome-title">
         <!-- Wrapper Halaman Welcome -->
         <div class="welcome-content">
-            
-            <!-- Ornamen Atas -->
-            <img src="src/assets/images/bar.png" alt="Ornament" class="welcome-ornament top">
 
-            <!-- Informasi Utama dengan Staggered di dalamnya -->
+            <!-- Informasi Utama (Arch Photo di Atas + Center.png + Teks + Tombol) -->
             <div class="welcome-info">
-                <h2 id="welcome-title" class="welcome-item">The Wedding Of</h2>
-                <figure class="welcome-item"></figure>
+                <!-- Bingkai Foto Arch (Melengkung di Bawah) di Bagian Atas -->
+                <figure class="welcome-item welcome-photo-arch"></figure>
+
+                <!-- Ornamen Tengah (Center.png) -->
+                <img src="src/assets/images/Center.png" alt="Ornament Center" class="welcome-ornament center">
+
+                <!-- Subjudul THE WEDDING OF -->
+                <h2 id="welcome-title" class="welcome-item">THE WEDDING OF</h2>
+
+                <!-- Nama Mempelai -->
+                <div class="welcome-couple-name welcome-item"></div>
+
+                <!-- Kepada Yth & Nama Tamu -->
                 <p class="welcome-item"></p>
-                <div class="welcome-item">
+
+                <!-- Tombol Buka Undangan -->
+                <div class="welcome-item welcome-btn-wrap">
                     <button type="button" aria-label="Buka Undangan">
-                        <i class="bx bxs-envelope-open"></i>
+                        <i class="bx bxs-envelope"></i>
                         <span>Buka Undangan</span>
                     </button>
                 </div>
             </div>
-
-            <!-- Ornamen Bawah -->
-            <img src="src/assets/images/bar.png" alt="Ornament" class="welcome-ornament bottom">
 
         </div>
     </section>
