@@ -31,7 +31,20 @@ export function splashBg() {
         };
     }
 
-    function drawOrganicBlob(cx, cy, baseRadius, colorObj, rng, isGoldAccent = false) {
+    // Pre-render satu splash ke offscreen canvas agar animasi fade-in/out ringan
+    function bakeSplashSprite(baseRadius, colorObj, seed, isGoldAccent = false) {
+        const rng = createRng(seed);
+        const pad = Math.ceil(baseRadius * 2.15);
+        const size = pad * 2;
+
+        const off = document.createElement('canvas');
+        off.width = size;
+        off.height = size;
+        const octx = off.getContext('2d', { alpha: true });
+        if (!octx) return null;
+
+        const cx = pad;
+        const cy = pad;
         const lobes = 9 + Math.floor(rng() * 6);
         const points = [];
         const angleStep = (Math.PI * 2) / lobes;
@@ -50,10 +63,10 @@ export function splashBg() {
         for (let layer = 0; layer < layers; layer++) {
             const scale = 1 - layer * 0.16;
             const alpha = isGoldAccent
-                ? (0.28 - layer * 0.08)
-                : (colorObj.type === 'white' ? 0.22 - layer * 0.05 : 0.17 - layer * 0.04);
+                ? (0.34 - layer * 0.09)
+                : (colorObj.type === 'white' ? 0.26 - layer * 0.06 : 0.20 - layer * 0.04);
 
-            const grad = ctx.createRadialGradient(
+            const grad = octx.createRadialGradient(
                 cx + (rng() - 0.5) * baseRadius * 0.2,
                 cy + (rng() - 0.5) * baseRadius * 0.2,
                 baseRadius * 0.08,
@@ -61,16 +74,16 @@ export function splashBg() {
                 cy,
                 baseRadius * scale * 1.15
             );
-            grad.addColorStop(0, `rgba(${colorObj.soft}, ${Math.max(0.03, alpha)})`);
+            grad.addColorStop(0, `rgba(${colorObj.soft}, ${Math.max(0.04, alpha)})`);
             grad.addColorStop(0.65, `rgba(${colorObj.rgb}, ${Math.max(0.02, alpha * 0.85)})`);
             grad.addColorStop(1, `rgba(${colorObj.rgb}, 0)`);
 
-            ctx.fillStyle = grad;
-            ctx.beginPath();
+            octx.fillStyle = grad;
+            octx.beginPath();
 
             const firstMidX = (points[points.length - 1].x + points[0].x) / 2;
             const firstMidY = (points[points.length - 1].y + points[0].y) / 2;
-            ctx.moveTo(firstMidX, firstMidY);
+            octx.moveTo(firstMidX, firstMidY);
 
             for (let i = 0; i < points.length; i++) {
                 const curr = points[i];
@@ -81,11 +94,11 @@ export function splashBg() {
                 const ny = cy + (next.y - cy) * scale;
                 const midX = (px + nx) / 2;
                 const midY = (py + ny) / 2;
-                ctx.quadraticCurveTo(px, py, midX, midY);
+                octx.quadraticCurveTo(px, py, midX, midY);
             }
 
-            ctx.closePath();
-            ctx.fill();
+            octx.closePath();
+            octx.fill();
         }
 
         const droplets = isGoldAccent ? 14 : 10 + Math.floor(rng() * 10);
@@ -95,11 +108,11 @@ export function splashBg() {
             const dx = cx + Math.cos(theta) * dist;
             const dy = cy + Math.sin(theta) * dist;
             const dr = isGoldAccent ? (1.2 + rng() * 3.2) : (1.5 + rng() * 5.5);
-            const dAlpha = isGoldAccent ? (0.35 + rng() * 0.35) : (0.14 + rng() * 0.22);
+            const dAlpha = isGoldAccent ? (0.38 + rng() * 0.35) : (0.16 + rng() * 0.22);
 
-            ctx.fillStyle = `rgba(${colorObj.rgb}, ${dAlpha})`;
-            ctx.beginPath();
-            ctx.ellipse(
+            octx.fillStyle = `rgba(${colorObj.rgb}, ${dAlpha})`;
+            octx.beginPath();
+            octx.ellipse(
                 dx,
                 dy,
                 dr * (0.8 + rng() * 0.6),
@@ -108,64 +121,159 @@ export function splashBg() {
                 0,
                 Math.PI * 2
             );
-            ctx.fill();
+            octx.fill();
         }
+
+        return { canvas: off, halfSize: pad };
     }
 
-    function renderSplash() {
-        const width = mainEl.clientWidth;
-        const height = mainEl.scrollHeight;
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let splashes = [];
+    let rafId = null;
+    let lastDrawTime = 0;
+    const frameInterval = 1000 / 26; // ~26 fps agar ringan & mulus
+    const startTime = performance.now();
+
+    function buildSplashes() {
+        width = mainEl.clientWidth;
+        height = mainEl.scrollHeight;
         if (!width || !height) return;
 
-        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         canvas.width = Math.floor(width * dpr);
         canvas.height = Math.floor(height * dpr);
         canvas.style.width = `${width}px`;
         canvas.style.height = `${height}px`;
 
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, width, height);
-
         const rng = createRng(20261124);
-        const stepY = Math.max(320, Math.min(460, height / 7));
+        const stepY = Math.max(340, Math.min(480, height / 7));
         const count = Math.ceil(height / stepY) + 1;
+        const list = [];
 
         for (let i = 0; i < count; i++) {
             const yCenter = i * stepY + stepY * (0.25 + rng() * 0.5);
-            const xCenter = width * (0.12 + rng() * 0.76);
-            const baseR = Math.min(width, 520) * (0.22 + rng() * 0.18);
+            const xCenter = width * (0.14 + rng() * 0.72);
+            const baseR = Math.min(width, 500) * (0.20 + rng() * 0.16);
 
             let picked = palette[Math.floor(rng() * palette.length)];
             if (i % 3 === 0) picked = palette[0]; // Royal Blue
             if (i % 4 === 1) picked = palette[2]; // Putih
 
-            drawOrganicBlob(xCenter, yCenter, baseR, picked, rng, picked.type === 'gold');
+            const mainSprite = bakeSplashSprite(
+                baseR,
+                picked,
+                1000 + i * 37,
+                picked.type === 'gold'
+            );
 
+            if (mainSprite) {
+                list.push({
+                    sprite: mainSprite,
+                    x: xCenter,
+                    y: yCenter,
+                    period: 6500 + rng() * 5500, // durasi 1 siklus muncul-memudar (ms)
+                    phase: rng() * Math.PI * 2,
+                    driftX: (rng() - 0.5) * 14,
+                    driftY: (rng() - 0.5) * 14,
+                    baseScale: 0.94 + rng() * 0.1
+                });
+            }
+
+            // Aksen emas / percikan tambahan di dekat splash utama
             if (rng() > 0.35) {
                 const goldObj = palette[4];
                 const offsetAngle = rng() * Math.PI * 2;
                 const offsetDist = baseR * (0.45 + rng() * 0.55);
-                drawOrganicBlob(
-                    xCenter + Math.cos(offsetAngle) * offsetDist,
-                    yCenter + Math.sin(offsetAngle) * offsetDist,
-                    baseR * (0.35 + rng() * 0.25),
-                    goldObj,
-                    rng,
-                    true
-                );
+                const goldR = baseR * (0.34 + rng() * 0.24);
+                const goldSprite = bakeSplashSprite(goldR, goldObj, 5000 + i * 73, true);
+
+                if (goldSprite) {
+                    list.push({
+                        sprite: goldSprite,
+                        x: xCenter + Math.cos(offsetAngle) * offsetDist,
+                        y: yCenter + Math.sin(offsetAngle) * offsetDist,
+                        period: 5500 + rng() * 5000,
+                        phase: rng() * Math.PI * 2,
+                        driftX: (rng() - 0.5) * 10,
+                        driftY: (rng() - 0.5) * 10,
+                        baseScale: 0.92 + rng() * 0.12
+                    });
+                }
             }
         }
+
+        splashes = list;
     }
 
-    renderSplash();
+    // Kurva smooth fade-in -> hold -> fade-out
+    function getCycleAlpha(tSec, periodMs, phase) {
+        const periodSec = periodMs / 1000;
+        const progress = (((tSec + (phase / (Math.PI * 2)) * periodSec) % periodSec) + periodSec) % periodSec / periodSec;
+
+        // 0.00 - 0.35: muncul perlahan, 0.35 - 0.65: tampak, 0.65 - 1.00: memudar perlahan
+        if (progress < 0.35) {
+            const k = progress / 0.35;
+            return k * k * (3 - 2 * k);
+        }
+        if (progress <= 0.65) {
+            return 1;
+        }
+        const k = (progress - 0.65) / 0.35;
+        const fade = 1 - k * k * (3 - 2 * k);
+        return Math.max(0, fade);
+    }
+
+    function drawFrame(now) {
+        if (document.hidden) {
+            rafId = requestAnimationFrame(drawFrame);
+            return;
+        }
+
+        if (now - lastDrawTime >= frameInterval) {
+            lastDrawTime = now;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, width, height);
+
+            const elapsedSec = (now - startTime) / 1000;
+
+            for (let i = 0; i < splashes.length; i++) {
+                const item = splashes[i];
+                const alpha = getCycleAlpha(elapsedSec, item.period, item.phase);
+                if (alpha <= 0.01) continue;
+
+                const wave = Math.sin(elapsedSec * (1000 / item.period) * Math.PI * 2 + item.phase);
+                const drawX = item.x + item.driftX * wave;
+                const drawY = item.y + item.driftY * wave;
+                const scale = item.baseScale + wave * 0.03;
+
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.translate(drawX, drawY);
+                ctx.scale(scale, scale);
+                ctx.drawImage(
+                    item.sprite.canvas,
+                    -item.sprite.halfSize,
+                    -item.sprite.halfSize
+                );
+                ctx.restore();
+            }
+        }
+
+        rafId = requestAnimationFrame(drawFrame);
+    }
+
+    buildSplashes();
+    rafId = requestAnimationFrame(drawFrame);
 
     window.addEventListener('load', () => {
-        setTimeout(renderSplash, 250);
+        setTimeout(buildSplashes, 250);
     });
 
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(renderSplash, 200);
+        resizeTimer = setTimeout(buildSplashes, 200);
     });
 }
