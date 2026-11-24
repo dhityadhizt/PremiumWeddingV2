@@ -5,6 +5,7 @@ import {galeri} from "./js/galeri.js";
 import {wishas} from "./js/wishas.js";
 import {navbar} from "./js/navbar.js";
 import {welcome} from "./js/welcome.js";
+import {initWatercolorSplash} from "./js/watercolor-splash.js";
 
 // load content
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,8 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     welcome();
     navbar();
     home();
-    bride()
+    bride();
     time();
     galeri();
     wishas();
+    initWatercolorSplash();
 });
