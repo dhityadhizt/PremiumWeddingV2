@@ -1,7 +1,8 @@
 /**
  * Parallax Abstract Watercolor Splash Effect
  * - Berada 1 tingkat di atas layer background (z-index: 2, tepat di atas ::after z-index: 1)
- * - Efek parallax mengikuti arah pergeseran background saat di-scroll
+ * - Efek parallax halus berbasis scroll dan tilt/mouse dengan GPU compositing
+ * - Mendukung section #home serta section setelahnya (#bride, .hadist, .time, .galeri, .wishas)
  * - Palet warna referensi: biru dongker/navy, biru keabu-abuan lembut, dan aksen emas
  */
 export class WatercolorSplash {
@@ -21,8 +22,9 @@ export class WatercolorSplash {
     this.maxSize = options.maxSize ?? 430;
     this.minDuration = options.minDuration ?? 3600;
     this.maxDuration = options.maxDuration ?? 6000;
-    // Faktor positif agar pergeseran parallax mengikuti arah gerak background saat scroll
     this.parallaxFactor = options.parallaxFactor ?? 0.35;
+    this.pointerParallaxFactor = options.pointerParallaxFactor ?? 14;
+    this.smoothing = options.smoothing ?? 0.14;
     this.blendMode = options.blendMode || "multiply"; // "multiply" | "screen"
     this.interactive = options.interactive ?? true;
 
@@ -33,8 +35,18 @@ export class WatercolorSplash {
     this.loadedImages = new Map();
     this.tintedCache = new Map();
 
+    this.pointerTarget = { x: 0, y: 0 };
+    this.pointerCurrent = { x: 0, y: 0 };
+    this.needsUpdate = false;
+    this.prefersReducedMotion = window.matchMedia
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false;
+
     this._onScroll = this._onScroll.bind(this);
+    this._onResize = this._onResize.bind(this);
+    this._onPointerMove = this._onPointerMove.bind(this);
     this._onPointerDown = this._onPointerDown.bind(this);
+    this._tick = this._tick.bind(this);
   }
 
   _preloadImages() {
@@ -87,6 +99,11 @@ export class WatercolorSplash {
     const targets = sections.length > 0 ? sections : [document.body];
 
     this.layers = targets.map((section) => {
+      const computedPos = window.getComputedStyle(section).position;
+      if (computedPos === "static") {
+        section.style.position = "relative";
+      }
+
       let container = section.querySelector(".watercolor-splash-container");
       if (!container) {
         container = document.createElement("div");
@@ -101,27 +118,92 @@ export class WatercolorSplash {
     });
   }
 
-  _updateParallax() {
+  _requestTick() {
+    this.needsUpdate = true;
+    if (!this.rafId) {
+      this.rafId = window.requestAnimationFrame(this._tick);
+    }
+  }
+
+  _tick() {
     this.rafId = null;
+    if (this.prefersReducedMotion || this.items.length === 0) {
+      this.needsUpdate = false;
+      return;
+    }
+
     const vh = window.innerHeight || document.documentElement.clientHeight || 800;
+
+    // Interpolasi halus untuk gerakan pointer
+    const dx = this.pointerTarget.x - this.pointerCurrent.x;
+    const dy = this.pointerTarget.y - this.pointerCurrent.y;
+    this.pointerCurrent.x += dx * this.smoothing;
+    this.pointerCurrent.y += dy * this.smoothing;
+
+    const pointerStillMoving = Math.abs(dx) > 0.001 || Math.abs(dy) > 0.001;
+
+    // Hitung geometri section sekali per frame (hindari layout thrashing di dalam loop item)
+    const sectionOffsets = new Map();
+    for (const { section } of this.layers) {
+      const rect = section.getBoundingClientRect();
+      // Lewati kalkulasi berat jika section jauh di luar viewport
+      if (rect.bottom < -vh || rect.top > vh * 2) {
+        sectionOffsets.set(section, null);
+        continue;
+      }
+      const sectionCenter = rect.top + rect.height * 0.5;
+      const deltaFromCenter = vh * 0.5 - sectionCenter;
+      sectionOffsets.set(section, deltaFromCenter);
+    }
+
+    let anyItemSettling = false;
 
     for (const item of this.items) {
       if (!item.parallaxEl || !item.section) continue;
-      const rect = item.section.getBoundingClientRect();
-      // Ketika halaman di-scroll ke bawah, section bergerak ke atas (rect.top berkurang).
-      // Nilai deltaFromCenter bernilai positif saat section bergeser ke atas, sehingga parallaxFactor positif
-      // menggeser splash mengikuti arah pergerakan background secara halus.
-      const sectionCenter = rect.top + rect.height * 0.5;
-      const deltaFromCenter = vh * 0.5 - sectionCenter;
-      const offsetPx = deltaFromCenter * this.parallaxFactor * item.speedMultiplier;
-      item.parallaxEl.style.setProperty("--parallax-y", `${offsetPx.toFixed(1)}px`);
+      const deltaFromCenter = sectionOffsets.get(item.section);
+      if (deltaFromCenter === null || deltaFromCenter === undefined) continue;
+
+      const targetY =
+        deltaFromCenter * this.parallaxFactor * item.speedMultiplier +
+        this.pointerCurrent.y * this.pointerParallaxFactor * item.depthFactor;
+      const targetX =
+        this.pointerCurrent.x * this.pointerParallaxFactor * item.depthFactor;
+
+      item.currentX += (targetX - item.currentX) * this.smoothing;
+      item.currentY += (targetY - item.currentY) * this.smoothing;
+
+      if (
+        Math.abs(targetX - item.currentX) > 0.05 ||
+        Math.abs(targetY - item.currentY) > 0.05
+      ) {
+        anyItemSettling = true;
+      }
+
+      item.parallaxEl.style.setProperty("--parallax-x", `${item.currentX.toFixed(2)}px`);
+      item.parallaxEl.style.setProperty("--parallax-y", `${item.currentY.toFixed(2)}px`);
+    }
+
+    if (this.needsUpdate || pointerStillMoving || anyItemSettling) {
+      this.needsUpdate = false;
+      this.rafId = window.requestAnimationFrame(this._tick);
     }
   }
 
   _onScroll() {
-    if (!this.rafId) {
-      this.rafId = window.requestAnimationFrame(this._updateParallax.bind(this));
-    }
+    this._requestTick();
+  }
+
+  _onResize() {
+    this._requestTick();
+  }
+
+  _onPointerMove(event) {
+    if (this.prefersReducedMotion) return;
+    const vw = window.innerWidth || 1;
+    const vh = window.innerHeight || 1;
+    this.pointerTarget.x = (event.clientX / vw - 0.5) * 2;
+    this.pointerTarget.y = (event.clientY / vh - 0.5) * 2;
+    this._requestTick();
   }
 
   _onPointerDown(event) {
@@ -158,9 +240,13 @@ export class WatercolorSplash {
     const posX = x ?? Math.random() * width;
     const posY = y ?? Math.random() * height;
 
+    const isMobile = window.innerWidth <= 768;
+    const effectiveMin = isMobile ? this.minSize * 0.72 : this.minSize;
+    const effectiveMax = isMobile ? this.maxSize * 0.72 : this.maxSize;
+
     const size = isTap
-      ? this.minSize * 0.72 + Math.random() * (this.maxSize - this.minSize) * 0.6
-      : this.minSize + Math.random() * (this.maxSize - this.minSize);
+      ? effectiveMin * 0.75 + Math.random() * (effectiveMax - effectiveMin) * 0.6
+      : effectiveMin + Math.random() * (effectiveMax - effectiveMin);
 
     const duration = this.minDuration + Math.random() * (this.maxDuration - this.minDuration);
     const rotation = `${Math.floor(Math.random() * 360)}deg`;
@@ -168,14 +254,26 @@ export class WatercolorSplash {
     const isLightOrGold = ["#8EA4C0", "#C5A059"].includes(color.toUpperCase());
     const peakOpacity = isLightOrGold ? "0.56" : "0.44";
     const midOpacity = isLightOrGold ? "0.36" : "0.28";
-    const speedMultiplier = (0.8 + Math.random() * 0.5).toFixed(2);
+
+    // Kedalaman parallax bervariasi berdasarkan ukuran elemen (elemen besar tampak lebih dekat)
+    const sizeRatio = (size - effectiveMin) / Math.max(1, effectiveMax - effectiveMin);
+    const speedMultiplier = 0.65 + sizeRatio * 0.75; // 0.65 - 1.40
+    const depthFactor = 0.5 + sizeRatio * 0.9; // 0.50 - 1.40
+
+    const vh = window.innerHeight || document.documentElement.clientHeight || 800;
+    const rect = layerObj.section.getBoundingClientRect();
+    const deltaFromCenter = vh * 0.5 - (rect.top + rect.height * 0.5);
+    const initialY = this.prefersReducedMotion
+      ? 0
+      : deltaFromCenter * this.parallaxFactor * speedMultiplier;
 
     const parallaxWrapper = document.createElement("div");
     parallaxWrapper.className = "watercolor-splash-parallax";
     parallaxWrapper.style.setProperty("--splash-x", `${posX}px`);
     parallaxWrapper.style.setProperty("--splash-y", `${posY}px`);
     parallaxWrapper.style.setProperty("--splash-size", `${size}px`);
-    parallaxWrapper.style.setProperty("--parallax-y", "0px");
+    parallaxWrapper.style.setProperty("--parallax-x", "0px");
+    parallaxWrapper.style.setProperty("--parallax-y", `${initialY.toFixed(2)}px`);
 
     const splashEl = document.createElement("div");
     splashEl.className = "watercolor-splash";
@@ -196,11 +294,14 @@ export class WatercolorSplash {
     const entryRecord = {
       section: layerObj.section,
       parallaxEl: parallaxWrapper,
-      speedMultiplier: parseFloat(speedMultiplier)
+      speedMultiplier,
+      depthFactor,
+      currentX: 0,
+      currentY: initialY
     };
     this.items.push(entryRecord);
 
-    this._updateParallax();
+    this._requestTick();
 
     window.setTimeout(() => {
       parallaxWrapper.remove();
@@ -225,6 +326,7 @@ export class WatercolorSplash {
     }
 
     this.timerId = window.setInterval(() => {
+      if (document.hidden) return;
       for (const layerObj of this.layers) {
         if (layerObj.container.childElementCount < this.maxActivePerSection) {
           this.spawnSplash(layerObj);
@@ -233,6 +335,8 @@ export class WatercolorSplash {
     }, this.spawnInterval);
 
     window.addEventListener("scroll", this._onScroll, { passive: true });
+    window.addEventListener("resize", this._onResize, { passive: true });
+    window.addEventListener("pointermove", this._onPointerMove, { passive: true });
     if (this.interactive) {
       document.addEventListener("pointerdown", this._onPointerDown, { passive: true });
     }
@@ -248,6 +352,8 @@ export class WatercolorSplash {
       this.rafId = null;
     }
     window.removeEventListener("scroll", this._onScroll);
+    window.removeEventListener("resize", this._onResize);
+    window.removeEventListener("pointermove", this._onPointerMove);
     document.removeEventListener("pointerdown", this._onPointerDown);
     for (const { container } of this.layers) {
       container.remove();
@@ -257,8 +363,13 @@ export class WatercolorSplash {
   }
 }
 
-function startWatercolorSplash() {
-  const splashEffect = new WatercolorSplash({
+let activeSplashInstance = null;
+
+export function initWatercolorSplash(customOptions = {}) {
+  if (activeSplashInstance) {
+    return activeSplashInstance;
+  }
+  activeSplashInstance = new WatercolorSplash({
     colors: ["#162A4A", "#2B4C7E", "#8EA4C0", "#C5A059"],
     splashImages: [
       "src/assets/images/watercolor-abstract-1.png",
@@ -270,14 +381,18 @@ function startWatercolorSplash() {
     minSize: 230,
     maxSize: 430,
     parallaxFactor: 0.35,
+    pointerParallaxFactor: 14,
+    smoothing: 0.14,
     blendMode: "multiply",
-    interactive: true
+    interactive: true,
+    ...customOptions
   });
-  splashEffect.init();
+  activeSplashInstance.init();
+  return activeSplashInstance;
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", startWatercolorSplash);
+  document.addEventListener("DOMContentLoaded", () => initWatercolorSplash());
 } else {
-  startWatercolorSplash();
+  initWatercolorSplash();
 }
