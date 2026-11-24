@@ -32,7 +32,8 @@ export const galeri = () => {
     const previewControls = document.getElementById('camera-preview-controls');
     const switchCameraBtn = document.getElementById('switch-camera-btn');
     const capturePhotoBtn = document.getElementById('capture-photo-btn');
-    const fallbackCameraInput = document.getElementById('fallback-camera-input');
+    const triggerNativeCamBtn = document.getElementById('trigger-native-cam-btn');
+    const nativeCameraInput = document.getElementById('native-camera-input');
     const retakePhotoBtn = document.getElementById('retake-photo-btn');
     const uploadPhotoBtn = document.getElementById('upload-photo-btn');
 
@@ -43,6 +44,12 @@ export const galeri = () => {
     let currentStream = null;
     let facingMode = 'environment';
     let capturedImageDataUrl = null;
+    let lastCaptureMode = 'native';
+
+    const isMobileDevice = () => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+            || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    };
 
     const urlParams = new URLSearchParams(window.location.search);
     const toParam = urlParams.get('to');
@@ -69,6 +76,19 @@ export const galeri = () => {
             }
         }
         return { width: w, height: h };
+    };
+
+    const showPreviewState = (dataUrl, mode) => {
+        capturedImageDataUrl = dataUrl;
+        lastCaptureMode = mode;
+        previewImgEl.src = capturedImageDataUrl;
+        videoStreamEl.style.display = 'none';
+        previewImgEl.style.display = 'block';
+        captureControls.style.display = 'none';
+        previewControls.style.display = 'flex';
+        loadingOverlay.style.display = 'none';
+        cameraModal.classList.add('active');
+        cameraModal.setAttribute('aria-hidden', 'false');
     };
 
     const renderCarousel = () => {
@@ -157,7 +177,15 @@ export const galeri = () => {
         videoStreamEl.srcObject = null;
     };
 
-    const startCameraStream = async () => {
+    const openNativeDeviceCamera = () => {
+        stopCameraStream();
+        if (nativeCameraInput) {
+            nativeCameraInput.value = '';
+            nativeCameraInput.click();
+        }
+    };
+
+    const startWebRtcCamera = async () => {
         stopCameraStream();
         capturedImageDataUrl = null;
         previewImgEl.style.display = 'none';
@@ -166,9 +194,15 @@ export const galeri = () => {
         previewControls.style.display = 'none';
         loadingOverlay.style.display = 'none';
 
+        cameraModal.classList.add('active');
+        cameraModal.setAttribute('aria-hidden', 'false');
+
         videoStreamEl.style.transform = facingMode === 'user' ? 'scaleX(-1)' : 'scaleX(1)';
 
         try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('Browser tidak mendukung getUserMedia');
+            }
             const constraints = {
                 video: {
                     facingMode: { ideal: facingMode },
@@ -180,15 +214,31 @@ export const galeri = () => {
             currentStream = await navigator.mediaDevices.getUserMedia(constraints);
             videoStreamEl.srcObject = currentStream;
         } catch (err) {
-            console.warn('Akses WebRTC kamera gagal/ditolak:', err);
+            console.warn('Akses WebRTC kamera gagal/ditolak, beralih ke kamera native device:', err);
+            cameraModal.classList.remove('active');
+            cameraModal.setAttribute('aria-hidden', 'true');
+            openNativeDeviceCamera();
         }
     };
 
+    // Klik tombol "Foto Yuk":
+    // - Di HP/Tablet (Android & iOS): langsung membuka aplikasi kamera bawaan device
+    // - Di Desktop/Laptop: langsung membuka stream webcam device (atau fallback ke file picker)
     openCameraBtn.addEventListener('click', () => {
-        cameraModal.classList.add('active');
-        cameraModal.setAttribute('aria-hidden', 'false');
-        startCameraStream();
+        if (isMobileDevice()) {
+            openNativeDeviceCamera();
+        } else {
+            startWebRtcCamera();
+        }
     });
+
+    if (triggerNativeCamBtn) {
+        triggerNativeCamBtn.addEventListener('click', () => {
+            cameraModal.classList.remove('active');
+            cameraModal.setAttribute('aria-hidden', 'true');
+            openNativeDeviceCamera();
+        });
+    }
 
     closeCameraBtn.addEventListener('click', () => {
         stopCameraStream();
@@ -198,7 +248,7 @@ export const galeri = () => {
 
     switchCameraBtn.addEventListener('click', () => {
         facingMode = facingMode === 'environment' ? 'user' : 'environment';
-        startCameraStream();
+        startWebRtcCamera();
     });
 
     capturePhotoBtn.addEventListener('click', () => {
@@ -220,18 +270,12 @@ export const galeri = () => {
         }
         ctx.drawImage(videoStreamEl, 0, 0, width, height);
 
-        capturedImageDataUrl = canvasEl.toDataURL('image/jpeg', JPEG_QUALITY);
-
-        previewImgEl.src = capturedImageDataUrl;
-        videoStreamEl.style.display = 'none';
-        previewImgEl.style.display = 'block';
-        captureControls.style.display = 'none';
-        previewControls.style.display = 'flex';
-
+        const dataUrl = canvasEl.toDataURL('image/jpeg', JPEG_QUALITY);
         stopCameraStream();
+        showPreviewState(dataUrl, 'webrtc');
     });
 
-    fallbackCameraInput.addEventListener('change', (e) => {
+    nativeCameraInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -246,13 +290,9 @@ export const galeri = () => {
                 const ctx = canvasEl.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                capturedImageDataUrl = canvasEl.toDataURL('image/jpeg', JPEG_QUALITY);
-                previewImgEl.src = capturedImageDataUrl;
-                videoStreamEl.style.display = 'none';
-                previewImgEl.style.display = 'block';
-                captureControls.style.display = 'none';
-                previewControls.style.display = 'flex';
+                const dataUrl = canvasEl.toDataURL('image/jpeg', JPEG_QUALITY);
                 stopCameraStream();
+                showPreviewState(dataUrl, 'native');
             };
             img.src = event.target.result;
         };
@@ -260,8 +300,14 @@ export const galeri = () => {
     });
 
     retakePhotoBtn.addEventListener('click', () => {
-        fallbackCameraInput.value = '';
-        startCameraStream();
+        nativeCameraInput.value = '';
+        if (lastCaptureMode === 'native' || isMobileDevice()) {
+            cameraModal.classList.remove('active');
+            cameraModal.setAttribute('aria-hidden', 'true');
+            openNativeDeviceCamera();
+        } else {
+            startWebRtcCamera();
+        }
     });
 
     uploadPhotoBtn.addEventListener('click', async () => {
