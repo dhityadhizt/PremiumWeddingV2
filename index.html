@@ -53,41 +53,18 @@
 </head>
 <body>
 
-<!-- Layer Animasi Splash Watercolor Lembut (Royal Blue, Putih, Hitam) -->
-<div class="watercolor-bg-layer" aria-hidden="true">
-    <!-- Splash Royal Blue -->
-    <div class="wc-blob wc-blue wc-blob-1"></div>
-    <div class="wc-blob wc-blue wc-blob-2"></div>
-
-    <!-- Splash Putih -->
-    <div class="wc-blob wc-white wc-blob-3"></div>
-    <div class="wc-blob wc-white wc-blob-4"></div>
-
-    <!-- Splash Hitam -->
-    <div class="wc-blob wc-black wc-blob-5"></div>
-    <div class="wc-blob wc-black wc-blob-6"></div>
-
-    <!-- Percikan Halus (Splatter) Natural -->
-    <svg class="wc-splatter wc-splatter-1" viewBox="0 0 240 240" fill="none">
-        <circle cx="52" cy="48" r="4" fill="#1d4ed8" opacity="0.28"/>
-        <circle cx="84" cy="30" r="2" fill="#2563eb" opacity="0.24"/>
-        <circle cx="34" cy="88" r="2.5" fill="#0f172a" opacity="0.14"/>
-        <circle cx="176" cy="64" r="5" fill="#ffffff" opacity="0.45"/>
-        <circle cx="195" cy="105" r="3" fill="#1d4ed8" opacity="0.22"/>
-        <circle cx="155" cy="188" r="3.5" fill="#0f172a" opacity="0.12"/>
-        <circle cx="70" cy="176" r="5.5" fill="#1e40af" opacity="0.2"/>
-        <circle cx="118" cy="204" r="2.5" fill="#ffffff" opacity="0.4"/>
-        <circle cx="204" cy="166" r="2" fill="#1d4ed8" opacity="0.22"/>
-    </svg>
-
-    <svg class="wc-splatter wc-splatter-2" viewBox="0 0 240 240" fill="none">
-        <circle cx="60" cy="62" r="3" fill="#0f172a" opacity="0.13"/>
-        <circle cx="110" cy="40" r="5" fill="#ffffff" opacity="0.42"/>
-        <circle cx="168" cy="75" r="3" fill="#2563eb" opacity="0.24"/>
-        <circle cx="188" cy="138" r="4" fill="#1d4ed8" opacity="0.2"/>
-        <circle cx="132" cy="186" r="2.5" fill="#0f172a" opacity="0.12"/>
-        <circle cx="54" cy="158" r="4.5" fill="#ffffff" opacity="0.38"/>
-    </svg>
+<!-- Container Animasi Salju Turun -->
+<div class="snow-container" aria-hidden="true">
+    <i class="bx bx-snowflake snowflake" style="left: 5%; animation-duration: 8s; animation-delay: 0s; font-size: 0.8rem;"></i>
+    <i class="bx bxs-circle snowflake" style="left: 15%; animation-duration: 6s; animation-delay: 2s; font-size: 0.4rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 25%; animation-duration: 10s; animation-delay: 1s; font-size: 1rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 35%; animation-duration: 7s; animation-delay: 3s; font-size: 0.6rem;"></i>
+    <i class="bx bxs-circle snowflake" style="left: 45%; animation-duration: 9s; animation-delay: 0.5s; font-size: 0.5rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 55%; animation-duration: 6.5s; animation-delay: 4s; font-size: 0.9rem;"></i>
+    <i class="bx bxs-circle snowflake" style="left: 65%; animation-duration: 8.5s; animation-delay: 2.5s; font-size: 0.4rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 75%; animation-duration: 7.5s; animation-delay: 1.5s; font-size: 0.7rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 85%; animation-duration: 9.5s; animation-delay: 3.5s; font-size: 0.5rem;"></i>
+    <i class="bx bx-snowflake snowflake" style="left: 95%; animation-duration: 6s; animation-delay: 0.8s; font-size: 0.8rem;"></i>
 </div>
 
 <header>
@@ -288,6 +265,7 @@
 
         <div data-aos="zoom-in" data-aos-duration="1000">
             <h2>Ucapan & Doa</h2>
+            <!-- Tambahkan id="rsvp-form" agar seleksi elemen di JS lebih akurat -->
             <form id="rsvp-form">
                 <label for="name">Nama</label>
                 <input type="text" name="name" id="name" placeholder="Masukan Nama Anda" autocomplete="off" required/>
